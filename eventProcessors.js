@@ -23,7 +23,7 @@ exports.noballs = function(e) {
   return increment;
 };
 
-exports.wide = function(e) {
+exports.wides = function(e) {
   debug('Processing wide: %s', JSON.stringify(e));
   var increment = {};
   increment.runs = 0;

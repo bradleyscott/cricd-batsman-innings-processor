@@ -4,7 +4,7 @@ var _ = require('underscore');
 var exports = module.exports = {};
 
 // Configuration variables
-var host = process.env.EVENTSTORE_HOST ? process.env.EVENTSTORE_HOST : '127.0.0.1';
+var host = process.env.EVENTSTORE_HOST ? process.env.EVENTSTORE_HOST : 'eventstore';
 var port = process.env.EVENTSTORE_PORT ? process.env.EVENTSTORE_PORT : 1113;
 var user = process.env.EVENTSTORE_USER ? process.env.EVENTSTORE_USER  : 'admin';
 var password = process.env.EVENTSTORE_PASSWORD ? process.env.EVENTSTORE_PASSWORD  : 'changeit';

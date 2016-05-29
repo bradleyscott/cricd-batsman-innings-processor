@@ -33,7 +33,7 @@ exports.wides = function(e) {
   return increment;
 };
 
-exports.bye = function(e) {
+exports.byes = function(e) {
   debug('Processing bye: %s', JSON.stringify(e));
   var increment = {};
   increment.runs = 0;

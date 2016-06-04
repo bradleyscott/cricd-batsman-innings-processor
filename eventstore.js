@@ -6,18 +6,17 @@ var exports = module.exports = {};
 // Configuration variables
 var host = process.env.EVENTSTORE_HOST ? process.env.EVENTSTORE_HOST : 'eventstore';
 var port = process.env.EVENTSTORE_PORT ? process.env.EVENTSTORE_PORT : 1113;
-var user = process.env.EVENTSTORE_USER ? process.env.EVENTSTORE_USER  : 'admin';
-var password = process.env.EVENTSTORE_PASSWORD ? process.env.EVENTSTORE_PASSWORD  : 'changeit';
-var stream = process.env.EVENTSTORE_STREAM ? process.env.EVENTSTORE_STREAM : 'cricket_events_v1';
+var user = process.env.EVENTSTORE_USER ? process.env.EVENTSTORE_USER : 'admin';
+var password = process.env.EVENTSTORE_PASSWORD ? process.env.EVENTSTORE_PASSWORD : 'changeit';
 
 getEventsForBatsman = function(batsmanId, matchId, callback) {
-    getAllEvents(function(error, events) {
+    getAllEvents(matchId, function(error, events) {
         if (error) callback(error);
         try {
-            events = filterMatchEvents(events, matchId);
             events = filterBatsmanEvents(events, batsmanId);
+        } catch (err) {
+            callback(err);
         }
-        catch(err) { callback(err); }
 
         callback(null, events);
     });
@@ -37,32 +36,32 @@ filterBatsmanEvents = function(events, batsmanId) {
     return filtered;
 };
 
-filterMatchEvents = function(events, matchId) {
-    debug('Filtering events for matchId: %s', matchId);
-    var filtered = _(events).filter(function(e) {
-        return e.match == matchId;
-    });
+getAllEvents = function(matchId, callback) {
+    if (!matchId) {
+        var error = 'matchId is required to get EventStore events';
+        debug(error);
+        callback(error);
+        return;
+    }
 
-    debug('%s events found', filtered.length);
-    return filtered;
-};
-
-getAllEvents = function(callback) {
     var settings = {
-      host: host,
-      port: port
+        host: host,
+        port: port
     };
     debug('Getting all cricket events from EventStore. %s', JSON.stringify(settings));
 
     var connection = client(settings);
     connection.on('connect', function() {
-        var auth = { username: user, password: password };
+        var auth = {
+            username: user,
+            password: password
+        };
         debug('EventStore connection established. Reading stream with credentials %s', JSON.stringify(auth));
 
-        connection.readStreamEventsForward(stream, {
+        connection.readStreamEventsForward('match-' + matchId, {
             start: 0,
             count: 4096, // TODO: Make this dynamic
-            auth : auth
+            auth: auth
         }, function(err, readResult) {
             if (err) {
                 var error = 'Problem reading from EventStore stream: ' + stream + '. ' + err;

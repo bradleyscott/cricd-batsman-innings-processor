@@ -61,7 +61,8 @@ getAllEvents = function(matchId, callback) {
         connection.readStreamEventsForward('match-' + matchId, {
             start: 0,
             count: 4096, // TODO: Make this dynamic
-            auth: auth
+            auth: auth,
+            resolveLinkTos: true
         }, function(err, readResult) {
             if (err) {
                 var error = 'Problem reading from EventStore stream: ' + stream + '. ' + err;

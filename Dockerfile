@@ -6,12 +6,12 @@
 FROM node:4-slim
 MAINTAINER Bradley Scott
 
-RUN apt-get update && \
-    apt-get install -y git
+# Copy code to container
+RUN mkdir cricd-batsman-innings-processor
+COPY . /cricd-batsman-innings-processor
 
-# Pull down the source from the repo and download dependencies
-RUN git clone git://github.com/bradleyscott/cricd-batsman-innings-processor.git \
-	&& cd cricd-batsman-innings-processor \
+# Get dependencies
+RUN cd cricd-batsman-innings-processor \
 	&& npm install
 
 # Define working directory.

@@ -1,4 +1,4 @@
-var debug = require('debug')('batsman-innings-eventstore');
+var debug = require('debug')('batsman-innings-processor-eventstore');
 var client = require('ges-client');
 var _ = require('underscore');
 var exports = module.exports = {};
@@ -58,7 +58,7 @@ getAllEvents = function(matchId, callback) {
         };
         debug('EventStore connection established. Reading stream with credentials %s', JSON.stringify(auth));
 
-        connection.readStreamEventsForward('match-' + matchId, {
+        connection.readStreamEventsForward('cricd-match-' + matchId, {
             start: 0,
             count: 4096, // TODO: Make this dynamic
             auth: auth,

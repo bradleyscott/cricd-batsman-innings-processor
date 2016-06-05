@@ -1,4 +1,4 @@
-var debug = require('debug')('batsman-innings-processors');
+var debug = require('debug')('batsman-innings-processor-eventProcessors');
 var _ = require('underscore');
 var exports = module.exports = {};
 

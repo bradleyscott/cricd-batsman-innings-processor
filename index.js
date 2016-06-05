@@ -17,7 +17,7 @@ app.get('/', function(req, res) {
         return res.status(400).send(error);
     }
 
-    var events = eventStore.getEventsForBatsman(batsman, match, function(error, events) {
+    var events = eventStore.getEvents(batsman, match, function(error, events) {
         if (error) {
             debug(error);
             return res.status(500).send(error);

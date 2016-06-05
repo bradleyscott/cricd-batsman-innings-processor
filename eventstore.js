@@ -9,8 +9,8 @@ var port = process.env.EVENTSTORE_PORT ? process.env.EVENTSTORE_PORT : 1113;
 var user = process.env.EVENTSTORE_USER ? process.env.EVENTSTORE_USER : 'admin';
 var password = process.env.EVENTSTORE_PASSWORD ? process.env.EVENTSTORE_PASSWORD : 'changeit';
 
-getEventsForBatsman = function(batsmanId, matchId, callback) {
-    getAllEvents(matchId, function(error, events) {
+getEvents = function(batsmanId, matchId, callback) {
+    getMatchEvents(matchId, function(error, events) {
         if (error) callback(error);
         try {
             events = filterBatsmanEvents(events, batsmanId);
@@ -21,7 +21,7 @@ getEventsForBatsman = function(batsmanId, matchId, callback) {
         callback(null, events);
     });
 };
-exports.getEventsForBatsman = getEventsForBatsman;
+exports.getEvents = getEvents;
 
 filterBatsmanEvents = function(events, batsmanId) {
     debug('Filtering events for batsmanId: %s', batsmanId);
@@ -36,7 +36,7 @@ filterBatsmanEvents = function(events, batsmanId) {
     return filtered;
 };
 
-getAllEvents = function(matchId, callback) {
+getMatchEvents = function(matchId, callback) {
     if (!matchId) {
         var error = 'matchId is required to get EventStore events';
         debug(error);
@@ -44,11 +44,12 @@ getAllEvents = function(matchId, callback) {
         return;
     }
 
+    var stream = 'cricd-match-' + matchId;
     var settings = {
         host: host,
         port: port
     };
-    debug('Getting all cricket events from EventStore. %s', JSON.stringify(settings));
+    debug('Getting match events from EventStore. %s', JSON.stringify(settings));
 
     var connection = client(settings);
     connection.on('connect', function() {
@@ -58,7 +59,7 @@ getAllEvents = function(matchId, callback) {
         };
         debug('EventStore connection established. Reading stream with credentials %s', JSON.stringify(auth));
 
-        connection.readStreamEventsForward('cricd-match-' + matchId, {
+        connection.readStreamEventsForward(stream, {
             start: 0,
             count: 4096, // TODO: Make this dynamic
             auth: auth,
@@ -69,7 +70,7 @@ getAllEvents = function(matchId, callback) {
                 callback(error);
             }
 
-            debug('Retrieved %s Eventstore events', readResult.Events.length);
+            debug('Retrieved %s match events', readResult.Events.length);
             var events = _(readResult.Events).map(function(e) {
                 var json = e.Event.Data.toString();
                 return JSON.parse(json);

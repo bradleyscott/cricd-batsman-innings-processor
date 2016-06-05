@@ -24,7 +24,7 @@ app.get('/', function(req, res) {
         }
 
         if(events.length == 0) {
-          debug('No events for this batsan in this match');
+          debug('No events for this batsman in this match');
           return res.send();
         }
 

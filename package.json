@@ -1,5 +1,5 @@
 {
-    "name": "cricd-batsman-innings-processor",
+    "name": "batsman-innings-processor",
     "private": true,
     "version": "0.0.0",
     "description": "An HTTP API that can tell you stats about a batsman's innings during a match",
@@ -20,7 +20,7 @@
     },
     "repository": {
       "type": "git",
-      "url": "git://github.com/bradleyscott/cricd-batsman-innings-processor.git"
+      "url": "git://github.com/cricd/batsman-innings-processor.git"
     },
     "author": "Bradley Scott"
 }

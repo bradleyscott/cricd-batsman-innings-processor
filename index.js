@@ -11,21 +11,22 @@ app.get('/', function(req, res) {
     var match = req.query.match;
     var batsman = req.query.batsman;
 
-    if (!match || !batsman) {
+    if(!match || !batsman) {
         var error = 'matchId and batsmanId must be included in request query params';
         debug(error);
         return res.status(400).send(error);
     }
 
     var events = eventStore.getEvents(batsman, match, function(error, events) {
-        if (error) {
+        if(error) {
             debug(error);
             return res.status(500).send(error);
         }
 
         if(events.length == 0) {
-          debug('No events for this batsman in this match');
-          return res.send();
+            var message = 'No events for this batsman in this match';
+            debug(message);
+            return res.status(404).send(message);
         }
 
         var stats = {
@@ -43,7 +44,7 @@ app.get('/', function(req, res) {
             try {
                 var increment = eventProcessors[e.eventType](e);
                 incrementStats(stats, increment);
-            } catch (error) {
+            } catch(error) {
                 var message = 'Error trying to process events. ' + error;
                 debug(message);
                 return res.status(500).send(message);
@@ -61,12 +62,12 @@ incrementStats = function(stats, increment) {
     debug('Incrementing stats using: %s', JSON.stringify(increment));
 
     stats.runs += increment.runs;
-    if (stats.runs && stats.scoring[increment.runs])
+    if(stats.runs && stats.scoring[increment.runs])
         stats.scoring[increment.runs]++;
     else if(stats.runs && !stats.scoring[increment.runs])
-      stats.scoring[increment.runs] = 1;
+        stats.scoring[increment.runs] = 1;
 
-    if (increment.dismissal) stats.dismissal = increment.dismissal;
+    if(increment.dismissal) stats.dismissal = increment.dismissal;
     stats.ballsFaced += increment.ballsFaced;
     stats.strikeRate = (stats.runs / stats.ballsFaced) * 100;
     stats.events.push(increment.event);

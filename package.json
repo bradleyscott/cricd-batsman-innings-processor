@@ -1,26 +1,28 @@
 {
-    "name": "batsman-innings-processor",
-    "private": true,
-    "version": "0.0.0",
-    "description": "An HTTP API that can tell you stats about a batsman's innings during a match",
-    "main": "index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "license": "ISC",
-    "dependencies": {
-        "debug": "^2.2.0",
-        "express": "^4.13.4",
-        "ges-client": "^0.10.0",
-        "underscore": "^1.8.3"
-    },
-    "scripts": {
-      "debug": "DEBUG=* node-debug index.js",
-      "start": "DEBUG=* node index.js"
-    },
-    "repository": {
-      "type": "git",
-      "url": "git://github.com/cricd/batsman-innings-processor.git"
-    },
-    "author": "Bradley Scott"
+  "name": "batsman-innings-processor",
+  "private": true,
+  "version": "0.0.0",
+  "description": "An HTTP API that can tell you stats about a batsman's innings during a match",
+  "main": "index.js",
+  "scripts": {
+    "debug": "DEBUG=* node-debug index.js",
+    "start": "DEBUG=* node index.js",
+    "test": "mocha --reporter=spec"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "debug": "^2.2.0",
+    "express": "^4.13.4",
+    "ges-client": "^0.10.0",
+    "underscore": "^1.8.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/cricd/batsman-innings-processor.git"
+  },
+  "author": "Bradley Scott",
+  "devDependencies": {
+    "mocha": "^3.0.2",
+    "should": "^11.1.0"
+  }
 }

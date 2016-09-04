@@ -2,6 +2,21 @@ var debug = require('debug')('batsman-innings-processor-eventProcessors');
 var _ = require('underscore');
 var exports = module.exports = {};
 
+exports.incrementStats = function(stats, increment) {
+    debug('Incrementing stats using: %s', JSON.stringify(increment));
+
+    stats.runs += increment.runs;
+    if(stats.runs && stats.scoring[increment.runs])
+        stats.scoring[increment.runs]++;
+    else if(stats.runs && !stats.scoring[increment.runs])
+        stats.scoring[increment.runs] = 1;
+
+    if(increment.dismissal) stats.dismissal = increment.dismissal;
+    stats.ballsFaced += increment.ballsFaced;
+    stats.strikeRate = (stats.runs / stats.ballsFaced) * 100;
+    stats.events.push(increment.event);
+};
+
 exports.delivery = function(e) {
   debug('Processing delivery: %s', JSON.stringify(e));
   var increment = {};

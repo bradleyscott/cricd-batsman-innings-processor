@@ -43,7 +43,7 @@ app.get('/', function(req, res) {
 
             try {
                 var increment = eventProcessors[e.eventType](e);
-                incrementStats(stats, increment);
+                eventProcessors.incrementStats(stats, increment);
             } catch(error) {
                 var message = 'Error trying to process events. ' + error;
                 debug(message);
@@ -57,18 +57,3 @@ app.get('/', function(req, res) {
 
 app.listen(3000);
 console.log('batsman-innings-processor listening on port 3000...');
-
-incrementStats = function(stats, increment) {
-    debug('Incrementing stats using: %s', JSON.stringify(increment));
-
-    stats.runs += increment.runs;
-    if(stats.runs && stats.scoring[increment.runs])
-        stats.scoring[increment.runs]++;
-    else if(stats.runs && !stats.scoring[increment.runs])
-        stats.scoring[increment.runs] = 1;
-
-    if(increment.dismissal) stats.dismissal = increment.dismissal;
-    stats.ballsFaced += increment.ballsFaced;
-    stats.strikeRate = (stats.runs / stats.ballsFaced) * 100;
-    stats.events.push(increment.event);
-};

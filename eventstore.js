@@ -9,7 +9,7 @@ var port = process.env.EVENTSTORE_PORT ? process.env.EVENTSTORE_PORT : 1113;
 var user = process.env.EVENTSTORE_USER ? process.env.EVENTSTORE_USER : 'admin';
 var password = process.env.EVENTSTORE_PASSWORD ? process.env.EVENTSTORE_PASSWORD : 'changeit';
 
-getEvents = function(batsmanId, matchId, callback) {
+getBatsmanEvents = function(batsmanId, matchId, callback) {
     getMatchEvents(matchId, function(error, events) {
         if (error) callback(error);
         try {
@@ -21,7 +21,7 @@ getEvents = function(batsmanId, matchId, callback) {
         callback(null, events);
     });
 };
-exports.getEvents = getEvents;
+exports.getBatsmanEvents = getBatsmanEvents;
 
 filterBatsmanEvents = function(events, batsmanId) {
     debug('Filtering events for batsmanId: %s', batsmanId);
@@ -79,3 +79,4 @@ getMatchEvents = function(matchId, callback) {
         });
     });
 };
+exports.getMatchEvents = getMatchEvents;

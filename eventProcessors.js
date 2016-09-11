@@ -2,19 +2,36 @@ var debug = require('debug')('batsman-innings-processor-eventProcessors');
 var _ = require('underscore');
 var exports = module.exports = {};
 
+var initialiseInnings = function() {
+    return {
+      runs: 0,
+      scoring: {},
+      ballsFaced: 0,
+      events: []
+    };
+};
+
 exports.incrementStats = function(stats, increment) {
     debug('Incrementing stats using: %s', JSON.stringify(increment));
 
-    stats.runs += increment.runs;
-    if(stats.runs && stats.scoring[increment.runs])
-        stats.scoring[increment.runs]++;
-    else if(stats.runs && !stats.scoring[increment.runs])
-        stats.scoring[increment.runs] = 1;
+    var innings = increment.event.ball.innings;
+    var batsman;
+    increment.event.batsman ? batsman = increment.event.batsman.id : batsman = increment.event.batsmen.striker.id;
 
-    if(increment.dismissal) stats.dismissal = increment.dismissal;
-    stats.ballsFaced += increment.ballsFaced;
-    stats.strikeRate = (stats.runs / stats.ballsFaced) * 100;
-    stats.events.push(increment.event);
+    if(!stats[innings]) stats[innings] = {};
+    if(!stats[innings][batsman]) stats[innings][batsman] = initialiseInnings();
+
+    stats[innings][batsman].runs += increment.runs;
+
+    if(stats[innings][batsman].runs && stats[innings][batsman].scoring[increment.runs])
+        stats[innings][batsman].scoring[increment.runs]++;
+    else if(stats[innings][batsman].runs && !stats[innings][batsman].scoring[increment.runs])
+        stats[innings][batsman].scoring[increment.runs] = 1;
+
+    if(increment.dismissal) stats[innings][batsman].dismissal = increment.dismissal;
+    stats[innings][batsman].ballsFaced += increment.ballsFaced;
+    stats[innings][batsman].strikeRate = (stats[innings][batsman].runs / stats[innings][batsman].ballsFaced) * 100;
+    stats[innings][batsman].events.push(increment.event);
 };
 
 exports.delivery = function(e) {
@@ -165,7 +182,7 @@ exports.runOut = function(e) {
   debug('Processing runOut: %s', JSON.stringify(e));
   var increment = {};
 
-  if(e.batsmen.striker.id == e.batsman.id) {
+  if(!e.batsman || e.batsmen.striker.id == e.batsman.id) { // Hacked in a workaround to missing batsman values
     increment.runs = e.runs;
     increment.ballsFaced = 1;
   }

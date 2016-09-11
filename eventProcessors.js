@@ -17,7 +17,8 @@ exports.incrementStats = function(stats, increment) {
     var innings = increment.event.ball.innings;
     var batsman;
     increment.event.batsman ? batsman = increment.event.batsman.id : batsman = increment.event.batsmen.striker.id;
-
+    if(!batsman) return;
+    
     if(!stats[innings]) stats[innings] = {};
     if(!stats[innings][batsman]) stats[innings][batsman] = initialiseInnings();
 

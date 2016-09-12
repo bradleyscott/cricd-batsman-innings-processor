@@ -183,7 +183,7 @@ exports.runOut = function(e) {
   debug('Processing runOut: %s', JSON.stringify(e));
   var increment = {};
 
-  if(!e.batsman || e.batsmen.striker.id == e.batsman.id) { // Hacked in a workaround to missing batsman values
+  if(e.batsmen.striker.id == e.batsman.id) {
     increment.runs = e.runs;
     increment.ballsFaced = 1;
   }

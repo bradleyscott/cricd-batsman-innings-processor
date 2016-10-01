@@ -6,6 +6,13 @@ var eventStore = Promise.promisifyAll(require('./eventstore.js'));
 var eventProcessors = require('./eventProcessors.js');
 var _ = require('underscore');
 
+app.use(function(req, res, next) {
+    var allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS : 'http://localhost:8080';
+    res.header("Access-Control-Allow-Origin", allowedOrigins);
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
+
 app.get('/', function(req, res) {
     debug('Request received with query params %s', JSON.stringify(req.query));
 
@@ -30,7 +37,7 @@ app.get('/', function(req, res) {
             return res.status(404).send(message);
         }
 
-        var stats = {};
+        var stats = [];
         _(events).each(function(e) {
             debug('Invoking processor for: %s', e.eventType);
 
@@ -44,8 +51,15 @@ app.get('/', function(req, res) {
             }
         });
 
-        if(innings && batsman) stats = stats[innings][batsman];
-        else if(innings) stats = stats[innings];
+        // Eliminate any null values
+        for(var i = 0; i < stats.length; i++)
+            if(stats[i] == null) stats[i] = [];
+
+        // Narrow down results based on query params
+        if(innings && batsman) stats = _(stats[innings - 1]).find(function(i) {
+            return i.batsman.id == batsman;
+        });
+        else if(innings) stats = stats[innings - 1];
         
         return res.send(stats);
     })

@@ -19,16 +19,16 @@ app.get('/', function(req, res) {
     }
 
     eventStore.getMatchEventsAsync(match).then(function(events){
-        if(events.length == 0) {
-            var message = 'No events for this match';
-            debug(message);
-            return res.send([]);
-        }
-
         events = _(events).filter(function(e){
             if(e.ball && e.ball.innings != innings) return false;
             else return true;
         });
+
+        if(events.length == 0) {
+            var message = 'No events for this match and innings';
+            debug(message);
+            return res.send([]);
+        }
 
         var stats = [];
         _(events).each(function(e) {

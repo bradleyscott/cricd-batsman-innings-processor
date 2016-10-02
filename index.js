@@ -45,6 +45,7 @@ app.get('/', function(req, res) {
         });
         
         eventProcessors.calculateMinutes(stats);
+        _(stats).each(function(e){ delete e.events; });
         return res.send(stats);
     })
     .catch(function(error){

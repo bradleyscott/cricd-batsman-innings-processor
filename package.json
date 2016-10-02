@@ -1,8 +1,8 @@
 {
-  "name": "batsman-innings-processor",
+  "name": "batting-processor",
   "private": true,
   "version": "0.0.0",
-  "description": "An HTTP API that can tell you stats about a batsman's innings during a match",
+  "description": "An HTTP API that can tell you about batting stats for an innings",
   "main": "index.js",
   "scripts": {
     "debug": "DEBUG=* node-debug index.js",
@@ -15,11 +15,12 @@
     "debug": "^2.2.0",
     "express": "^4.13.4",
     "ges-client": "^0.10.0",
+    "moment": "^2.15.1",
     "underscore": "^1.8.3"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/cricd/batsman-innings-processor.git"
+    "url": "git://github.com/cricd/batting-processor.git"
   },
   "author": "Bradley Scott",
   "devDependencies": {

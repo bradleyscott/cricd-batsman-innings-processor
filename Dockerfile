@@ -1,21 +1,21 @@
 
 ############################################################
-# Dockerfile to run cricd batsman-innings-processor API
+# Dockerfile to run cricd batting-processor API
 ############################################################
 
 FROM node:4-slim
 MAINTAINER Bradley Scott
 
 # Copy code to container
-RUN mkdir cricd-batsman-innings-processor
-COPY . /cricd-batsman-innings-processor
+RUN mkdir cricd-batting-processor
+COPY . /cricd-batting-processor
 
 # Get dependencies
-RUN cd cricd-batsman-innings-processor \
+RUN cd cricd-batting-processor \
 	&& npm install
 
 # Define working directory.
-WORKDIR /cricd-batsman-innings-processor
+WORKDIR /cricd-batting-processor
 
 # Start the service
 CMD npm start

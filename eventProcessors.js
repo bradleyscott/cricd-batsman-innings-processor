@@ -1,42 +1,49 @@
-var debug = require('debug')('batsman-innings-processor-eventProcessors');
+var debug = require('debug')('batting-processor:eventProcessors');
+var moment = require('moment');
 var _ = require('underscore');
 var exports = module.exports = {};
 
-exports.getInningsIndex = function(stats, inningsIndex, batsman) {
-    var innings = stats[inningsIndex] ? stats[inningsIndex] : stats[inningsIndex] = [];
+exports.calculateMinutes = function(stats) {
+  debug('Calculating innings at crease for %s batsmen', stats.length);
 
-    for(var i =0; i < innings.length; i++)
-      if(innings[i].batsman.id == batsman.id) return i;
-
-    innings.push({
-      batsman: batsman,
-      runs: 0,
-      scoring: {},
-      ballsFaced: 0,
-      events: []
-    });
-    return innings.length - 1;
+  for(var i = 0; i < stats.length - 1; i++) {
+    var end1 = moment(stats[i].events[0].timestamp);
+    var end2 = moment(stats[i].events[stats[i].events.length - 1].timestamp);
+    var difference = end1.diff(end2, 'minutes');
+    stats[i].minutes = difference;
+  }
 };
-var getInningsIndex = exports.getInningsIndex;
+
+var getBatsmansIndex = function(stats, batsman) {
+  for(var i = 0; i < stats.length; i++)
+    if(stats[i].batsman.id == batsman.id) return i;
+
+  stats.push({
+    batsman: batsman,
+    runs: 0,
+    scoring: {},
+    ballsFaced: 0,
+    events: []
+  });
+  return stats.length - 1;
+};
 
 exports.incrementStats = function(stats, increment) {
-    debug('Incrementing stats using: %s', JSON.stringify(increment));
+  debug('Incrementing stats using: %s', JSON.stringify(increment));
 
-    var innings = increment.event.ball.innings - 1;
-    var batsman = increment.event.batsman ? increment.event.batsman : increment.event.batsmen.striker;
-    
-    var index = getInningsIndex(stats, innings, batsman);
-    stats[innings][index].runs += increment.runs;
+  var batsman = increment.event.batsman ? increment.event.batsman : increment.event.batsmen.striker;
+  var index = getBatsmansIndex(stats, batsman);
+  stats[index].runs += increment.runs;
 
-    if(stats[innings][index].runs && stats[innings][index].scoring[increment.runs])
-        stats[innings][index].scoring[increment.runs]++;
-    else if(stats[innings][index].runs && !stats[innings][index].scoring[increment.runs])
-        stats[innings][index].scoring[increment.runs] = 1;
+  if(stats[index].runs && stats[index].scoring[increment.runs])
+    stats[index].scoring[increment.runs]++;
+  else if(stats[index].runs && !stats[index].scoring[increment.runs])
+    stats[index].scoring[increment.runs] = 1;
 
-    if(increment.dismissal) stats[innings][index].dismissal = increment.dismissal;
-    stats[innings][index].ballsFaced += increment.ballsFaced;
-    stats[innings][index].strikeRate = (stats[innings][index].runs / stats[innings][index].ballsFaced) * 100;
-    stats[innings][index].events.push(increment.event);
+  if(increment.dismissal) stats[index].dismissal = increment.dismissal;
+  stats[index].ballsFaced += increment.ballsFaced;
+  stats[index].strikeRate = (stats[index].runs / stats[index].ballsFaced) * 100;
+  stats[index].events.push(increment.event);
 };
 
 exports.delivery = function(e) {

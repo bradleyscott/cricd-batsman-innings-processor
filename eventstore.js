@@ -1,4 +1,4 @@
-var debug = require('debug')('batsman-innings-processor-eventstore');
+var debug = require('debug')('batting-processor:eventstore');
 var client = require('ges-client');
 var _ = require('underscore');
 var exports = module.exports = {};
@@ -8,33 +8,6 @@ var host = process.env.EVENTSTORE_HOST ? process.env.EVENTSTORE_HOST : 'eventsto
 var port = process.env.EVENTSTORE_PORT ? process.env.EVENTSTORE_PORT : 1113;
 var user = process.env.EVENTSTORE_USER ? process.env.EVENTSTORE_USER : 'admin';
 var password = process.env.EVENTSTORE_PASSWORD ? process.env.EVENTSTORE_PASSWORD : 'changeit';
-
-getBatsmanEvents = function(batsmanId, matchId, callback) {
-    getMatchEvents(matchId, function(error, events) {
-        if (error) callback(error);
-        try {
-            events = filterBatsmanEvents(events, batsmanId);
-        } catch (err) {
-            callback(err);
-        }
-
-        callback(null, events);
-    });
-};
-exports.getBatsmanEvents = getBatsmanEvents;
-
-filterBatsmanEvents = function(events, batsmanId) {
-    debug('Filtering events for batsmanId: %s', batsmanId);
-    var filtered = _(events).filter(function(e) {
-        var isRelevant = false;
-        if (e.batsmen.striker.id == batsmanId) isRelevant = true;
-        if (e.batsman && e.batsman.id == batsmanId) isRelevant = true;
-        return isRelevant;
-    });
-
-    debug('%s events found', filtered.length);
-    return filtered;
-};
 
 getMatchEvents = function(matchId, callback) {
     if (!matchId) {
